@@ -1,22 +1,22 @@
 ARG BUILD_FROM
-FROM $BUILD_FROM
+FROM ${BUILD_FROM}
 
-# Install requirements for add-on
-RUN \
-  apk add --no-cache \
+# Set a default language environment
+ENV LANG C.UTF-8
+
+# Copy the entire 'rootfs' from your 'blueprint_engine' folder
+# into the root of the Docker image. This correctly places your scripts.
+COPY blueprint_engine/rootfs/ /
+
+# Install Python, pip, and necessary build tools.
+# Then, install all Python packages from your requirements.txt file.
+# This is more efficient than installing numpy separately.
+RUN apk add --no-cache \
     python3 \
     py3-pip \
-    py3-numpy
+    build-base \
+    python3-dev && \
+    pip3 install --no-cache-dir -r /usr/bin/requirements.txt
 
-# Copy data for add-on
-COPY run.sh /
-RUN chmod a+x /run.sh
-
-# Copy Python requirements and install
-COPY blueprint_engine/rootfs/usr/bin/requirements.txt /tmp/
-RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
-
-# Copy the engine script
-COPY blueprint_engine/rootfs/usr/bin/engine.py /usr/bin/
-
-CMD [ "/run.sh" ]
+# The CMD line is removed as it's not needed. The Home Assistant
+# Supervisor executes the run.sh from your repository root automatically.

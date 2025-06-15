@@ -17,7 +17,7 @@ The Blueprint Engine is the computational backend for the HA 3D Blueprint system
 - Generates SVG blueprints of your home layout
 - Provides a REST API for the Home Assistant integration to communicate with
 
-This add-on works in conjunction with the [HA 3D Blueprint Integration](https://github.com/your-username/ha-3d-blueprint-integration) to provide a complete home mapping solution.
+This add-on works in conjunction with the [HA 3D Blueprint Integration](https://github.com/delicioushouse/ha-3d-blueprint-integration) to provide a complete home mapping solution.
 
 ## Prerequisites
 
@@ -33,7 +33,7 @@ Before installing this add-on, ensure you have:
 2. Click the three-dots menu and select **"Repositories"**
 3. Add this repository URL:
    ```
-   https://github.com/your-username/ha-3d-blueprint-addon
+   https://github.com/delicioushouse/ha-3d-blueprint-addon
    ```
 4. Install the "Blueprint Engine" add-on
 5. Configure the InfluxDB connection details in the Configuration tab
@@ -68,7 +68,7 @@ The add-on exposes the following REST API endpoints on port 8124:
 
 ## Support
 
-For issues and feature requests, please use the [GitHub Issues](https://github.com/your-username/ha-3d-blueprint-addon/issues) page.
+For issues and feature requests, please use the [GitHub Issues](https://github.com/delicioushouse/ha-3d-blueprint-addon/issues) page.
 
 ## License
 
