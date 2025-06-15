@@ -4,11 +4,11 @@ FROM homeassistant/base-python:3.12
 WORKDIR /usr/src/app
 
 # Copy the requirements file and install dependencies
-COPY rootfs/usr/bin/requirements.txt .
+COPY blueprint_engine/rootfs/usr/bin/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy our Python engine code into the container
-COPY rootfs/usr/bin/engine.py .
+COPY blueprint_engine/rootfs/usr/bin/engine.py .
 
 # Expose the internal API port
 EXPOSE 8124
