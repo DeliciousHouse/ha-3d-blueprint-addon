@@ -1,20 +1,22 @@
-FROM homeassistant/base-python:3.12
+ARG BUILD_FROM
+FROM $BUILD_FROM
 
-# Set up our working directory
-WORKDIR /usr/src/app
+# Install requirements for add-on
+RUN \
+  apk add --no-cache \
+    python3 \
+    py3-pip \
+    py3-numpy
 
-# Copy the requirements file and install dependencies
-COPY blueprint_engine/rootfs/usr/bin/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy data for add-on
+COPY run.sh /
+RUN chmod a+x /run.sh
 
-# Copy our Python engine code into the container
-COPY blueprint_engine/rootfs/usr/bin/engine.py /usr/bin/engine.py
+# Copy Python requirements and install
+COPY blueprint_engine/rootfs/usr/bin/requirements.txt /tmp/
+RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 
-# Copy the run script
-COPY run.sh /usr/bin/run.sh
-RUN chmod +x /usr/bin/run.sh
+# Copy the engine script
+COPY blueprint_engine/rootfs/usr/bin/engine.py /usr/bin/
 
-# Expose the internal API port
-EXPOSE 8124
-
-CMD [ "/usr/bin/run.sh" ]
+CMD [ "/run.sh" ]
