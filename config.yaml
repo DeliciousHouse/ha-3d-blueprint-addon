@@ -14,8 +14,6 @@ boot: auto
 hassio_api: true
 hassio_role: default
 # The user will need to have the InfluxDB add-on running.
-services:
-  - "47c55538-influxdbv2:want"
 image: "delicioushouse/{slug}"
 ports:
   "8124/tcp": 8124 # Port for the internal API
