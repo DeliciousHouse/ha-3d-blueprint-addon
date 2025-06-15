@@ -1,0 +1,6 @@
+numpy
+scikit-image
+fastapi
+uvicorn
+requests
+influxdb-client
