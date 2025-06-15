@@ -1,30 +1,32 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-# Install required packages
+# Install packages required to build and run the add-on
 RUN \
   apk add --no-cache \
     python3 \
     py3-pip \
-    py3-numpy \
-    py3-requests \
-    py3-scipy
+    build-base \
+    python3-dev \
+    jpeg-dev \
+    zlib-dev \
+    libffi-dev \
+    cargo
 
-# Set working directory
-WORKDIR /usr/src/app
+# Copy the entire contents of the local rootfs directory
+# to the root of the container's filesystem.
+COPY blueprint_engine/rootfs/ /
 
-# Copy requirements first for better caching
-COPY rootfs/usr/bin/requirements.txt /usr/src/app/
-RUN pip3 install --no-cache-dir -r /usr/src/app/requirements.txt
-
-# Copy files to the right locations
-COPY rootfs/ /
+# Install Python dependencies using the correct, absolute path
+# to the requirements.txt file inside the container.
+RUN pip3 install --no-cache-dir --break-system-packages -r /usr/bin/requirements.txt
 
 # Copy and make run.sh executable
 COPY run.sh /
 RUN chmod a+x /run.sh
 
-# Create shared directory
+# The /share directory is mounted by Home Assistant, but creating
+# it here ensures it exists.
 RUN mkdir -p /share
 
 # Command to run when the container starts
