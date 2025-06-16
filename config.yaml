@@ -14,7 +14,7 @@ boot: auto
 hassio_api: true
 hassio_role: default
 # The user will need to have the InfluxDB add-on running.
-image: "bkamai/blueprint_engine"
+image: null
 ports:
   "8124/tcp": 8124 # Port for the internal API
 schema:
