@@ -299,6 +299,12 @@ def startup_event():
 
 @app.post("/configure")
 def configure_engine(config: dict):
+    # If this is just a validation call with no sensors, don't initialize the model.
+    # This prevents the ZeroDivisionError.
+    if not config or not config.get("stationary_sensors"):
+        _LOGGER.info("Received empty config for validation. Returning success.")
+        return {"status": "validation_success"}
+
     try:
         model = TomographyModel(config, {"estimated_sq_ft": 2000})
         ENGINE_STATE["model"] = model
@@ -307,7 +313,8 @@ def configure_engine(config: dict):
         return {"status": "configured"}
     except Exception as e:
         _LOGGER.error("Failed to initialize TomographyModel: %s", e)
-        return {"status": "error"}
+        # It's better to return an error status code to the client
+        return {"status": "error", "message": str(e)}
 
 @app.post("/tag_location")
 def tag_location(data: dict):
