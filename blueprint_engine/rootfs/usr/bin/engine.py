@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 import uvicorn
 import os
 import logging
@@ -14,12 +14,24 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 from typing import Dict, List, Tuple
 
 # --- Constants & Logging ---
+OPTIONS_PATH = "/data/options.json"
 SHARED_DIR = "/share"
 SVG_OUTPUT_PATH = os.path.join(SHARED_DIR, "blueprint.svg")
 MODEL_STATE_PATH = os.path.join(SHARED_DIR, "blueprint_model.json")
 log_level = os.environ.get("LOG_LEVEL", "INFO").upper()
 logging.basicConfig(level=log_level)
 _LOGGER = logging.getLogger(__name__)
+
+
+def get_configured_port() -> int:
+    """Read the configured port from the options file, with a default."""
+    try:
+        with open(OPTIONS_PATH, "r") as f:
+            options = json.load(f)
+            return int(options.get("port", 8124))
+    except (FileNotFoundError, json.JSONDecodeError):
+        _LOGGER.warning("Could not read options.json, using default port 8124.")
+        return 8124
 
 
 def save_grid_as_svg(grid, sensor_coords, ref_points, output_path, cell_size=10):
@@ -299,11 +311,9 @@ def startup_event():
 
 @app.post("/configure")
 def configure_engine(config: dict):
-    # If this is just a validation call with no sensors, don't initialize the model.
-    # This prevents the ZeroDivisionError.
     if not config or not config.get("stationary_sensors"):
         _LOGGER.info("Received empty config for validation. Returning success.")
-        return {"status": "validation_success"}
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     try:
         model = TomographyModel(config, {"estimated_sq_ft": 2000})
@@ -313,7 +323,6 @@ def configure_engine(config: dict):
         return {"status": "configured"}
     except Exception as e:
         _LOGGER.error("Failed to initialize TomographyModel: %s", e)
-        # It's better to return an error status code to the client
         return {"status": "error", "message": str(e)}
 
 @app.post("/tag_location")
@@ -338,4 +347,6 @@ def tag_location(data: dict):
     return {"status": "processed", "tag_type": tag_type}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8124)
+    port_to_use = get_configured_port()
+    _LOGGER.info(f"Starting engine on port {port_to_use}")
+    uvicorn.run(app, host="0.0.0.0", port=port_to_use)

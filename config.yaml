@@ -13,13 +13,25 @@ startup: application
 boot: auto
 hassio_api: true
 hassio_role: default
-# The user will need to have the InfluxDB add-on running.
-image: null
+# image: null # Correct for local development
+
+# This block exposes the port from the add-on's container
 ports:
-  "8124/tcp": 8124 # Port for the internal API
+  "8124/tcp": 8124
+
+# This block sets the default values for your options
+options:
+  port: 8124
+  log_level: "info"
+  influxdb_url: "http://47c55538-influxdbv2:8086"
+  influxdb_token: ""
+  influxdb_org: ""
+  influxdb_bucket: ""
+
+# This block defines the UI controls for the options
 schema:
-  log_level: list(trace|debug|info|notice|warning|error|fatal)?
-  # InfluxDB v2 Configuration
+  port: int
+  log_level: list(trace|debug|info|notice|warning|error|fatal)
   influxdb_url: str
   influxdb_token: password
   influxdb_org: str
