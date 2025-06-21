@@ -123,6 +123,8 @@ class DatabaseManager:
         self.org = os.environ.get("INFLUXDB_ORG")
         self.bucket = os.environ.get("INFLUXDB_BUCKET")
         self.client = None
+        self.write_api = None
+        self.query_api = None
         if all([self.url, self.token, self.org, self.bucket]):
             self.client = InfluxDBClient(url=self.url, token=self.token, org=self.org)
             self.write_api = self.client.write_api(write_options=SYNCHRONOUS)
@@ -132,7 +134,9 @@ class DatabaseManager:
 
     def write_data_point(self, measurement: str, tags: Dict, fields: Dict):
         """Writes a single data point to InfluxDB."""
-        if not self.write_api: return
+        if not self.write_api:
+            _LOGGER.warning("write_api not initialized, skipping write.")
+            return
         point = Point(measurement)
         for key, value in tags.items(): point = point.tag(key, value)
         for key, value in fields.items(): point = point.field(key, value)
@@ -144,7 +148,7 @@ class DatabaseManager:
     def get_snapshot_data(self, timestamp_str: str, window_seconds: int = 5) -> Dict:
         """Queries InfluxDB to get a snapshot of all RSSI data around a timestamp."""
         if not self.query_api:
-            _LOGGER.error("Cannot query InfluxDB, client not initialized.")
+            _LOGGER.warning("query_api not initialized, cannot query data.")
             return {}
 
         flux_query = f'''
