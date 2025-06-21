@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A Home Assistant add-on that provides the processing engine for the HA 3D Blueprint system. This add-on performs the heavy mathematical calculations required for Radio Tomographic Imaging (RTI) to generate a 2D/3D model of your home's layout using Bluetooth RSSI values.
+A Home Assistant add-on that provides the processing engine for the HA&nbsp;3D&nbsp;Blueprint&nbsp;system. This add-on performs the heavy mathematical calculations required for Radio Tomographic Imaging (RTI) to generate a 2D/3D model of your home's layout using Bluetooth RSSI values.
 
 **This project is under active development and is considered experimental.**
 
@@ -10,7 +10,7 @@ A Home Assistant add-on that provides the processing engine for the HA 3D Bluepr
 
 ## Overview
 
-The Blueprint Engine is the computational backend for the HA 3D Blueprint system. It:
+The Blueprint Engine is the computational backend for the HA&nbsp;3D&nbsp;Blueprint&nbsp;system. It:
 
 - Collects and processes RSSI data from your Bluetooth sensors
 - Performs Radio Tomographic Imaging calculations
