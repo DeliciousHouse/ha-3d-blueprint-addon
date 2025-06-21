@@ -12,6 +12,7 @@ import threading
 from influxdb_client import InfluxDBClient, Point, WriteOptions
 from influxdb_client.client.write_api import SYNCHRONOUS
 from typing import Dict, List, Tuple
+from datetime import datetime, timedelta
 
 # --- Constants & Logging ---
 OPTIONS_PATH = "/data/options.json"
@@ -142,14 +143,21 @@ class DatabaseManager:
             _LOGGER.error("Failed to write point to InfluxDB: %s", e)
 
     def get_snapshot_data(self, timestamp_str: str, window_seconds: int = 5) -> Dict:
-        """Queries InfluxDB to get a snapshot of all RSSI data around a timestamp."""
+        """Queries InfluxDB to get a snapshot of RSSI data around a timestamp."""
         if not self.query_api:
             _LOGGER.error("Cannot query InfluxDB, client not initialized.")
             return {}
 
+        try:
+            timestamp = datetime.fromisoformat(timestamp_str)
+        except (TypeError, ValueError):
+            _LOGGER.error("Invalid timestamp supplied to snapshot query: %s", timestamp_str)
+            return {}
+
+        start_time = (timestamp - timedelta(seconds=window_seconds)).isoformat()
         flux_query = f'''
         from(bucket: "{self.bucket}")
-          |> range(start: -{window_seconds}s, stop: time(v: "{timestamp_str}"))
+          |> range(start: time(v: "{start_time}"), stop: time(v: "{timestamp_str}"))
           |> filter(fn: (r) => r._measurement == "rssi_measurement")
           |> group()
           |> last()
