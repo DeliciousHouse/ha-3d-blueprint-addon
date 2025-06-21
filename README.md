@@ -72,4 +72,4 @@ For issues and feature requests, please use the [GitHub Issues](https://github.c
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the [MIT License](LICENSE).
